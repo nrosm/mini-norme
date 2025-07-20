@@ -59,16 +59,30 @@ static char	*extract_next_token(char *input, int *i)
 	start = *i;
 	quote = 0;
 	j = *i;
-	while (input[j])
+
+	// Si detectamos << o >> como token especial
+	if ((input[j] == '<' && input[j + 1] == '<') || (input[j] == '>' && input[j + 1] == '>'))
 	{
-		if ((input[j] == '\'' || input[j] == '"') && quote == 0)
-			quote = input[j];
-		else if (input[j] == quote)
-			quote = 0;
-		else if (input[j] == ' ' && quote == 0)
-			break ;
-		j++;
+		j += 2;
 	}
+	else if (input[j] == '<' || input[j] == '>' || input[j] == '|')
+	{
+		j += 1;
+	}
+	else
+	{
+		while (input[j])
+		{
+			if ((input[j] == '\'' || input[j] == '"') && quote == 0)
+				quote = input[j];
+			else if (input[j] == quote)
+				quote = 0;
+			else if (quote == 0 && (input[j] == ' ' || input[j] == '|' || input[j] == '<' || input[j] == '>'))
+				break;
+			j++;
+		}
+	}
+
 	*i = j;
 	return (ft_substr(input, start, j - start));
 }
